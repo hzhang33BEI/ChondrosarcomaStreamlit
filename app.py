@@ -2,9 +2,9 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import plotly.express as px
-# from pysurvival.utils import load_model
 import torch
 from pycox.models import CoxPH
+# from models.cox import CoxPH
 st.set_page_config(layout="wide")
 
 def data_porcess(data):
@@ -67,12 +67,12 @@ def load_setting():
 settings, input_keys = load_setting()
 
 
-@st.cache_data(show_spinner=False)
-def get_model():
-    deepsurv_model = get_deepsurv_model()
-    deepsurv_model.load_model_weights(path="weights")
-    deepsurv_model.load_net('nets.pt')
-    return deepsurv_model
+# @st.cache_data(show_spinner=False)
+# def get_model():
+#     deepsurv_model = get_deepsurv_model()
+#     deepsurv_model.load_model_weights(path="weights")
+#     deepsurv_model.load_net('nets.pt')
+#     return deepsurv_model
 
 
 def get_code():
@@ -166,8 +166,13 @@ def plot_patients():
     ).reset_index(drop=True)
     st.dataframe(patients)
 
-deepsurv_model = get_model()
-
+deepsurv_model = get_deepsurv_model()
+# _ = deepsurv_model.compute_baseline_hazards()
+# deepsurv_model.load_net('nets.pt')
+deepsurv_model.load_model_weights(path="weights")
+# deepsurv_model.load_net('nets.pt')
+# _ = deepsurv_model.compute_baseline_hazards()
+# deepsurv_model.compute_baseline_hazards()
 # @st.cache(show_spinner=True)
 def predict():
     print('update patients . ##########')
@@ -179,12 +184,9 @@ def predict():
             input.append(value)
         if isinstance(value, str):
             input.append(settings[key]['values'].index(value))
-    print(input)
+    
     input = data_porcess(input)
-    print(input)
-
     input = np.expand_dims(np.array(input, dtype=np.float32), 0)
-
     survival = deepsurv_model.predict_surv_df(input)
     survival = np.array(survival)
 
