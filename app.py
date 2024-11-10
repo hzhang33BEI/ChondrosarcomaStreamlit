@@ -5,8 +5,6 @@ import plotly.express as px
 # from pysurvival.utils import load_model
 import torch
 from pycox.models import CoxPH
-from sklearn.preprocessing import StandardScaler
-from sklearn_pandas import DataFrameMapper
 st.set_page_config(layout="wide")
 
 def data_porcess(data):
