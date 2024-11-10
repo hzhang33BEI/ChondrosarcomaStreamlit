@@ -1,0 +1,6 @@
+numpy==1.26.3
+pandas==2.2.3
+streamlit==1.40.0
+torch==2.4.1
+pycox
+plotly
