@@ -313,8 +313,8 @@ class CoxPH(_CoxPHBase):
         https://bmcmedresmethodol.biomedcentral.com/articles/10.1186/s12874-018-0482-1
     """
     def __init__(self, net, optimizer=None, device=None, loss=None):
-        if loss is None:
-            loss = loss.CoxPHLoss()
+        # if loss is None:
+        #     loss = loss.CoxPHLoss()
         super().__init__(net, loss, optimizer, device)
 
 

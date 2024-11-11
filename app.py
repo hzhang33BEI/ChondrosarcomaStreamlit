@@ -1,14 +1,14 @@
-import os
-# 设置 pycox 数据存储路径
-os.environ['PYCOX_DATA'] = 'models'
+# import os
+# # 设置 pycox 数据存储路径
+# os.environ['PYCOX_DATA'] = 'models'
 import streamlit as st
 import numpy as np
 import pandas as pd
 import plotly.express as px
 import torch
-# from models.cox import CoxPH
+from models.cox import CoxPH
 st.set_page_config(layout="wide")
-from pycox.models import CoxPH
+# from pycox.models import CoxPH
 
 def data_porcess(data):
     age, tumor_size = data[:2]
