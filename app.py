@@ -67,12 +67,21 @@ def load_setting():
 settings, input_keys = load_setting()
 
 
-# @st.cache_data(show_spinner=False)
-# def get_model():
-#     deepsurv_model = get_deepsurv_model()
-#     deepsurv_model.load_model_weights(path="weights")
-#     deepsurv_model.load_net('nets.pt')
-#     return deepsurv_model
+@st.cache_data(show_spinner=False)
+def get_model():
+    # 加载CoxPH模型
+    deepsurv_model = get_deepsurv_model()
+    
+    # 加载预训练的模型权重
+    deepsurv_model.load_model_weights(path="weights", map_location=torch.device('cpu'))
+    
+    # 加载保存的基线累积风险数据（如果有）
+    baseline_hazards = pd.read_csv('baseline_hazards.csv', index_col=0)
+    baseline_cumulative_hazards = pd.read_csv('baseline_cumulative_hazards.csv', index_col=0)
+    deepsurv_model.baseline_hazards_ = baseline_hazards
+    deepsurv_model.baseline_cumulative_hazards_ = baseline_cumulative_hazards
+    
+    return deepsurv_model
 
 
 def get_code():
@@ -166,10 +175,14 @@ def plot_patients():
     ).reset_index(drop=True)
     st.dataframe(patients)
 
-deepsurv_model = get_deepsurv_model()
+# deepsurv_model = get_deepsurv_model()
 # _ = deepsurv_model.compute_baseline_hazards()
 # deepsurv_model.load_net('nets.pt')
-deepsurv_model.load_model_weights(path="weights")
+# deepsurv_model.load_model_weights(path="weights", map_location=torch.device('cpu'))
+# deepsurv_model.load_net(path="nets.pt", map_location=torch.device('cpu'))
+# _ = deepsurv_model.compute_baseline_hazards()
+# from IPython import embed;embed()
+# exit()
 # deepsurv_model.load_net('nets.pt')
 # _ = deepsurv_model.compute_baseline_hazards()
 # deepsurv_model.compute_baseline_hazards()
@@ -185,8 +198,11 @@ def predict():
         if isinstance(value, str):
             input.append(settings[key]['values'].index(value))
     
+    deepsurv_model = get_model()
     input = data_porcess(input)
     input = np.expand_dims(np.array(input, dtype=np.float32), 0)
+    # from IPython import embed;embed()
+    # exit()
     survival = deepsurv_model.predict_surv_df(input)
     survival = np.array(survival)
 
@@ -248,7 +264,7 @@ def plot_below_header():
     st.write('')
     st.write('')
 
-st.header('DeepSurv-based model for predicting survival of chondrosarcoma', anchor='survival-of-chondrosarcoma')
+st.header('Predicting survival model with eliminating racial bias of chondrosarcoma', anchor='survival-of-chondrosarcoma')
 if st.session_state['patients']:
     plot_below_header()
 st.subheader("Instructions:")
