@@ -6,6 +6,9 @@ import torch
 from pycox.models import CoxPH
 # from models.cox import CoxPH
 st.set_page_config(layout="wide")
+import os
+# 设置 pycox 数据存储路径
+os.environ['PYCOX_DATA'] = 'models'
 
 def data_porcess(data):
     age, tumor_size = data[:2]
